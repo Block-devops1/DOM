@@ -1,22 +1,29 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f4c5;
     padding: 20px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
 
 .container {
+    width: 90%;
     max-width: 600px;
-    margin: 50px auto;
+    margin-top: 50px;
     background: #fff;
     padding: 35px;
     border-radius: 19px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    /* Stretching logic */
+    height: auto; 
+    min-height: 150px;
 }
 
 h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .input-area {
@@ -27,45 +34,73 @@ h1 {
 
 #new-task {
     flex-grow: 1;
-    padding: 10px;
+    padding: 12px;
     border: 2px solid #ddd;
-    border-radius: 4px;
+    border-radius: 8px;
+    outline: none;
+}
+
+#new-task:focus {
+    border-color: #007bff;
 }
 
 #add-button {
-    padding: 10px 15px;
+    padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-weight: bold;
+    transition: 0.2s;
 }
 
+#add-button:hover {
+    background-color: #0056b3;
+}
+
+/* HORIZONTAL WRAPPING LIST */
 #task-list {
     display: flex;
+    flex-wrap: wrap; /* Allows tasks to jump to next line */
+    gap: 12px;      /* Space between tasks */
     list-style: none;
     padding: 0;
-    gap: 26px;
-    
+    margin: 0;
 }
 
 #task-list li {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    margin-bottom: 8px;
     background: #e9ecef;
-    border-radius: 4px;
-    transition: background-color 0.2s;
+    padding: 8px 15px;
+    border-radius: 50px; /* Makes them look like pills/tags */
+    border: 1px solid #dee2e6;
+    animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#task-list li span {
+    margin-right: 10px;
+    color: #495057;
+    font-size: 14px;
 }
 
 .delete-btn {
-    background: #dc3545;
-    color: white;
+    background: none;
     border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
+    color: #dc3545;
+    font-weight: bold;
     cursor: pointer;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.delete-btn:hover {
+    color: #a71d2a;
 }

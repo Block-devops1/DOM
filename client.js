@@ -1,55 +1,65 @@
-// The best practice: wait until the HTML is fully loaded before trying to grab elements
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get the three elements we need to interact with (based on their IDs)
     const taskInput = document.getElementById('new-task');
     const addButton = document.getElementById('add-button');
     const taskList = document.getElementById('task-list');
 
-    // 2. Define the main function to create and add a new task
+    // 1. Load tasks from memory when the page starts
+    const loadTasks = () => {
+        const savedTasks = JSON.parse(localStorage.getItem('myToDoData')) || [];
+        savedTasks.forEach(task => renderTask(task));
+    };
+
+    // 2. Save current list to memory
+    const saveTasks = () => {
+        const tasks = [];
+        document.querySelectorAll('#task-list span').forEach(span => {
+            tasks.push(span.innerText);
+        });
+        localStorage.setItem('myToDoData', JSON.stringify(tasks));
+    };
+
+    // 3. Put a task on the screen
+    const renderTask = (taskText) => {
+        const listItem = document.createElement('li');
+        
+        listItem.innerHTML = `
+            <span>${taskText}</span>
+            <button class="delete-btn">×</button>
+        `;
+
+        // Delete Logic
+        listItem.querySelector('.delete-btn').addEventListener('click', () => {
+            listItem.remove();
+            saveTasks(); // Save the updated list after deleting
+        });
+
+        taskList.appendChild(listItem);
+    };
+
+    // 4. Handle Adding a task
     const addTask = () => {
-        // Get the text the user typed, and use .trim() to remove any extra spaces
         const taskText = taskInput.value.trim();
 
-        // VALIDATION: If the input is empty, stop the function and do nothing
         if (taskText === '') {
-            alert('Please enter a task!');
+            alert('Please type something first!');
             return; 
         }
 
-        // 3. CORE LOGIC: Create the new list item (<li>) and its contents
-        
-        // a. Create the <li> element itself
-        const listItem = document.createElement('li');
-        
-        // b. Add the task text inside the <li>
-        listItem.innerHTML = `
-            <span>${taskText}</span>
-            <button class="delete-btn">Delete</button>
-        `;
-        
-        // c. Append the new <li> element to the main <ul> element
-        taskList.appendChild(listItem);
-        
-        // d. Clear the input field for the next task
+        renderTask(taskText);
+        saveTasks(); // Save the new task to memory
         taskInput.value = ''; 
-        
-        // 4. Attach the delete behavior to the new button we just created
-        // We look for the delete button *inside* the listItem we created.
-        const deleteButton = listItem.querySelector('.deletes-btn');
-        deleteButton.addEventListener('click', () => {
-            // The logic: Remove the parent element (the <li>) of the button.
-            listItem.remove(); 
-        });
     };
 
-    // 5. Connect the function to the 'Add Task' button's click event
+    // Listen for Button Click
     addButton.addEventListener('click', addTask);
     
-    // BONUS: Allow adding a task by pressing the 'Enter' key in the input field
+    // Listen for Enter Key
     taskInput.addEventListener('keypress', (event) => {
-        // KeyCode 13 is the Enter key
         if (event.key === 'Enter') {
             addTask();
         }
     });
+
+    // Run the load function on startup
+    loadTasks();
 });
