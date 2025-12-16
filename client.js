@@ -1,25 +1,35 @@
-document.addEventListener('DOMContentLoaded', () => {
+// 1. INITIALIZE SUPABASE
+// Replace the strings below with your actual Project URL and Anon Key from Supabase Settings -> API
+const SUPABASE_URL = 'https://your-project-url.supabase.co'; 
+const SUPABASE_KEY = 'your-anon-public-key'; 
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+document.addEventListener('DOMContentLoaded', async () => {
     const taskInput = document.getElementById('new-task');
     const addButton = document.getElementById('add-button');
     const taskList = document.getElementById('task-list');
 
-    // 1. Load tasks from memory when the page starts
-    const loadTasks = () => {
-        const savedTasks = JSON.parse(localStorage.getItem('myToDoData')) || [];
-        savedTasks.forEach(task => renderTask(task));
+    // 2. LOAD DATA FROM CLOUD
+    const loadTasks = async () => {
+        // This asks the Supabase 'todos' table for every row
+        const { data, error } = await _supabase
+            .from('todos')
+            .select('*');
+
+        if (error) {
+            console.error('Error loading tasks:', error.message);
+            return;
+        }
+
+        if (data) {
+            // Clear the list first to avoid duplicates, then render each task
+            taskList.innerHTML = ''; 
+            data.forEach(todo => renderTask(todo.task, todo.id));
+        }
     };
 
-    // 2. Save current list to memory
-    const saveTasks = () => {
-        const tasks = [];
-        document.querySelectorAll('#task-list span').forEach(span => {
-            tasks.push(span.innerText);
-        });
-        localStorage.setItem('myToDoData', JSON.stringify(tasks));
-    };
-
-    // 3. Put a task on the screen
-    const renderTask = (taskText) => {
+    // 3. RENDER FUNCTION (Creates the HTML for each task)
+    const renderTask = (taskText, id) => {
         const listItem = document.createElement('li');
         
         listItem.innerHTML = `
@@ -27,17 +37,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="delete-btn">×</button>
         `;
 
-        // Delete Logic
-        listItem.querySelector('.delete-btn').addEventListener('click', () => {
-            listItem.remove();
-            saveTasks(); // Save the updated list after deleting
+        // Attach Delete Logic
+        const deleteBtn = listItem.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', async () => {
+            // Delete from Cloud using the unique ID
+            const { error } = await _supabase
+                .from('todos')
+                .delete()
+                .eq('id', id);
+
+            if (!error) {
+                listItem.remove();
+            } else {
+                console.error('Error deleting:', error.message);
+            }
         });
 
         taskList.appendChild(listItem);
     };
 
-    // 4. Handle Adding a task
-    const addTask = () => {
+    // 4. ADD TASK LOGIC
+    const addTask = async () => {
         const taskText = taskInput.value.trim();
 
         if (taskText === '') {
@@ -45,21 +65,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return; 
         }
 
-        renderTask(taskText);
-        saveTasks(); // Save the new task to memory
-        taskInput.value = ''; 
+        // Insert the new task into the 'todos' table
+        const { data, error } = await _supabase
+            .from('todos')
+            .insert([{ task: taskText }])
+            .select(); // .select() returns the new ID we need for deleting
+
+        if (!error && data) {
+            renderTask(data[0].task, data[0].id);
+            taskInput.value = ''; 
+        } else {
+            console.error('Error adding task:', error ? error.message : 'Unknown error');
+        }
     };
 
-    // Listen for Button Click
+    // 5. EVENT LISTENERS
     addButton.addEventListener('click', addTask);
     
-    // Listen for Enter Key
     taskInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             addTask();
         }
     });
 
-    // Run the load function on startup
+    // Run the load function immediately when page opens
     loadTasks();
 });
