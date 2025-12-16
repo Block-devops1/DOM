@@ -1,7 +1,7 @@
 // 1. INITIALIZE SUPABASE
 // Replace these with your actual Project URL and Anon Key from Supabase Settings -> API
-const SUPABASE_URL = 'https://your-project-url.supabase.co'; 
-const SUPABASE_KEY = 'your-anon-public-key'; 
+const SUPABASE_URL = 'https://qxuoupnjjwuoryatrizy.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_Y2TJOWkQS4QcPaFD8LlV1g_1NtyGlKw'; 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener('DOMContentLoaded', async () => {
