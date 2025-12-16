@@ -41,10 +41,6 @@ h1 {
     outline: none;
 }
 
-#new-task:focus {
-    border-color: #007bff;
-}
-
 #add-button {
     padding: 10px 15px;
     background-color: #007bff;
@@ -54,10 +50,6 @@ h1 {
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s;
-}
-
-#add-button:hover {
-    background-color: #0056b3;
 }
 
 /* HORIZONTAL WRAPPING LIST */
@@ -94,8 +86,4 @@ h1 {
     padding: 0;
     font-size: 16px;
     line-height: 1;
-}
-
-.delete-btn:hover {
-    color: #a71d2a;
 }

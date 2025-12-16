@@ -1,5 +1,5 @@
 // 1. INITIALIZE SUPABASE
-// Use your actual Project URL and Anon Key from Supabase Settings -> API
+// Replace these with your actual Project URL and Anon Key from Supabase Settings -> API
 const SUPABASE_URL = 'https://your-project-url.supabase.co'; 
 const SUPABASE_KEY = 'your-anon-public-key'; 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // 3. RENDER FUNCTION (Supports horizontal wrapping)
+    // 3. RENDER FUNCTION
     const renderTask = (taskText, id) => {
         const listItem = document.createElement('li');
         listItem.innerHTML = `
@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button class="delete-btn">×</button>
         `;
 
+        // FIXED: Using '.delete-btn' to match the HTML class
         const deleteBtn = listItem.querySelector('.delete-btn');
         deleteBtn.addEventListener('click', async () => {
             const { error } = await _supabase
